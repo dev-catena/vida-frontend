@@ -105,17 +105,34 @@ const form = ref({
 
 const formatDateTime = (date) => {
   if (!date) return '';
-  return new Date(date).toLocaleString('pt-BR');
+  const data = new Date(date);
+  const hora = String(data.getHours()).padStart(2, '0');
+  const minutos = String(data.getMinutes()).padStart(2, '0');
+  return `${data.toLocaleDateString('pt-BR')} ${hora}:${minutos}`;
 };
 
 const carregarRegistros = async () => {
   try {
-    const response = await api.get(`/prescricao/listar`, {
+    if (!props.pessoaId) {
+      console.warn('ID da pessoa não fornecido');
+      registros.value = [];
+      return;
+    }
+
+    console.log('Carregando registros para pessoa_id:', props.pessoaId);
+    const response = await api.get(`/prescricao/listar?pessoa_id=${props.pessoaId}`, {
       headers: {
         Authorization: `Bearer ${authStore.token}`
       }
     });
-    registros.value = response.data || [];
+    
+    // Garante que estamos pegando apenas os registros da pessoa específica
+    const dados = Array.isArray(response.data) ? response.data : 
+                 (response.data.data || []);
+    
+    registros.value = dados.filter(registro => registro.pessoa_id === props.pessoaId);
+    
+    console.log('Registros carregados:', registros.value);
   } catch (error) {
     console.error('Erro ao carregar registros:', error);
     registros.value = [];

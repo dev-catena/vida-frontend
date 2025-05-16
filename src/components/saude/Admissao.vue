@@ -74,37 +74,43 @@
       <div class="modal-content">
         <h2>{{ registroAtual ? 'Editar' : 'Nova' }} Admissão</h2>
         <form @submit.prevent="salvarRegistro">
-          <div class="form-group">
-            <label>Motivo da Admissão</label>
-            <select v-model="form.motivo" required>
-              <option value="">Selecione...</option>
-              <option value="Clínica">Clínica</option>
-              <option value="Enfermagem">Enfermagem</option>
-              <option value="Fisioterapia">Fisioterapia</option>
-              <option value="Nutrição">Nutrição</option>
-              <option value="Psicologia">Psicologia</option>
-              <option value="Médico">Médico</option>
-            </select>
-          </div>
+          <div class="form-columns">
+            <div class="form-column">
+              <div class="form-group">
+                <label>Motivo da Admissão</label>
+                <select v-model="form.motivo" required>
+                  <option value="">Selecione...</option>
+                  <option value="Clínica">Clínica</option>
+                  <option value="Enfermagem">Enfermagem</option>
+                  <option value="Fisioterapia">Fisioterapia</option>
+                  <option value="Nutrição">Nutrição</option>
+                  <option value="Psicologia">Psicologia</option>
+                  <option value="Médico">Médico</option>
+                </select>
+              </div>
 
-          <div class="form-group">
-            <label>Procedência</label>
-            <select v-model="form.procedencia" required>
-              <option value="">Selecione...</option>
-              <option value="Hospital">Hospital</option>
-              <option value="Clínica">Clínica</option>
-              <option value="Domicílio">Domicílio</option>
-              <option value="Outro Estabelecimento">Outro Estabelecimento</option>
-            </select>
-          </div>
+              <div class="form-group">
+                <label>Procedência</label>
+                <select v-model="form.procedencia" required>
+                  <option value="">Selecione...</option>
+                  <option value="Hospital">Hospital</option>
+                  <option value="Clínica">Clínica</option>
+                  <option value="Domicílio">Domicílio</option>
+                  <option value="Outro Estabelecimento">Outro Estabelecimento</option>
+                </select>
+              </div>
+            </div>
 
-          <div class="form-group">
-            <label>Observações</label>
-            <textarea
-              v-model="form.observacoes"
-              rows="4"
-              placeholder="Descreva informações relevantes sobre a admissão..."
-            ></textarea>
+            <div class="form-column">
+              <div class="form-group full-width">
+                <label>Observações</label>
+                <textarea
+                  v-model="form.observacoes"
+                  rows="12"
+                  placeholder="Descreva informações relevantes sobre a admissão..."
+                ></textarea>
+              </div>
+            </div>
           </div>
 
           <div class="modal-actions">
@@ -153,7 +159,10 @@ const tiposAdmissao = [
 
 const formatDateTime = (date) => {
   if (!date) return '';
-  return new Date(date).toLocaleString('pt-BR');
+  const data = new Date(date);
+  const hora = String(data.getHours()).padStart(2, '0');
+  const minutos = String(data.getMinutes()).padStart(2, '0');
+  return `${data.toLocaleDateString('pt-BR')} ${hora}:${minutos}`;
 };
 
 const aplicarFiltro = (tipo) => {
@@ -381,11 +390,29 @@ th {
   padding: var(--margem);
   border-radius: var(--raio);
   width: 100%;
-  max-width: 500px;
+  max-width: 800px;
+}
+
+.form-columns {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: var(--margem);
+}
+
+.form-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--margem);
 }
 
 .form-group {
   margin-bottom: var(--margem);
+}
+
+.form-group.full-width {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .form-group label {
@@ -405,7 +432,16 @@ th {
 
 .form-group textarea {
   resize: vertical;
-  min-height: 100px;
+  flex: 1;
+  min-height: 200px;
+  line-height: 1.5;
+  font-family: inherit;
+}
+
+.form-group textarea:focus {
+  border-color: var(--cor-primaria);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(var(--cor-primaria-rgb), 0.1);
 }
 
 .modal-actions {
@@ -413,6 +449,8 @@ th {
   justify-content: flex-end;
   gap: var(--margem);
   margin-top: var(--margem);
+  padding-top: var(--margem);
+  border-top: 1px solid var(--cor-separador);
 }
 
 .btn-cancelar {

@@ -164,7 +164,10 @@ const getTipoLabel = (tipo) => {
 
 const formatDateTime = (date) => {
   if (!date) return '';
-  return new Date(date).toLocaleString('pt-BR');
+  const data = new Date(date);
+  const hora = String(data.getHours()).padStart(2, '0');
+  const minutos = String(data.getMinutes()).padStart(2, '0');
+  return `${data.toLocaleDateString('pt-BR')} ${hora}:${minutos}`;
 };
 
 const carregarRegistros = async () => {

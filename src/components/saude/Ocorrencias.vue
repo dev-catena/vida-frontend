@@ -94,25 +94,32 @@ const form = ref({
 
 const formatDate = (date) => {
   if (!date) return '';
-  return new Date(date).toLocaleDateString('pt-BR');
+  const data = new Date(date);
+  const hora = String(data.getHours()).padStart(2, '0');
+  const minutos = String(data.getMinutes()).padStart(2, '0');
+  return `${data.toLocaleDateString('pt-BR')} ${hora}:${minutos}`;
 };
 
 const carregarRegistros = async () => {
   try {
+    if (!props.pessoaId) {
+      console.warn('ID da pessoa não fornecido');
+      registros.value = [];
+      return;
+    }
+
     console.log('Carregando registros para pessoa_id:', props.pessoaId);
-    const response = await api.get(`/ocorrencia/listar`, {
-      params: {
-        pessoa_id: props.pessoaId
-      },
+    const response = await api.get(`/ocorrencia/listar?pessoa_id=${props.pessoaId}`, {
       headers: {
         Authorization: `Bearer ${authStore.token}`
       }
     });
-    console.log('Resposta da API:', response.data);
     
-    // Verifica se os dados estão em response.data ou response.data.data
-    registros.value = Array.isArray(response.data) ? response.data : 
-                     (response.data.data || []);
+    // Garante que estamos pegando apenas os registros da pessoa específica
+    const dados = Array.isArray(response.data) ? response.data : 
+                 (response.data.data || []);
+    
+    registros.value = dados.filter(registro => registro.pessoa_id === props.pessoaId);
     
     console.log('Registros carregados:', registros.value);
   } catch (error) {
@@ -141,11 +148,24 @@ const fecharModal = () => {
 
 const salvarRegistro = async () => {
   try {
+    if (!props.pessoaId) {
+      console.error('ID da pessoa não fornecido');
+      alert('Erro: ID da pessoa não fornecido');
+      return;
+    }
+
+    if (!authStore.user || !authStore.user.id) {
+      console.error('Usuário não autenticado');
+      alert('Erro: Usuário não autenticado');
+      return;
+    }
+
     const dados = {
       pessoa_id: props.pessoaId,
       tipo: form.value.tipo,
       data: form.value.data,
-      observacoes: form.value.observacoes
+      observacoes: form.value.observacoes,
+      usuario_id: authStore.user.id
     };
 
     console.log('Enviando dados para cadastro:', dados);
@@ -158,17 +178,22 @@ const salvarRegistro = async () => {
 
     await carregarRegistros();
     fecharModal();
+    alert('Registro salvo com sucesso!');
   } catch (error) {
     console.error('Erro ao salvar registro:', error);
+    alert(`Erro ao salvar registro: ${error.response?.data?.message || error.message}`);
   }
 };
 
 // Observar mudanças no ID da pessoa
-watch(() => props.pessoaId, (newId) => {
-  if (newId) {
+watch(() => props.pessoaId, (newId, oldId) => {
+  if (newId !== oldId) {
+    // Limpa os registros atuais
+    registros.value = [];
+    // Carrega os novos registros
     carregarRegistros();
   }
-});
+}, { immediate: true });
 
 // Carregar registros quando o componente for montado
 onMounted(() => {

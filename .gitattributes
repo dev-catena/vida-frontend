@@ -1,0 +1,22 @@
+# Definir o comportamento padrão para todos os arquivos
+* text=auto
+
+# Arquivos específicos que devem sempre usar LF
+*.js text eol=lf
+*.jsx text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.vue text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+
+# Arquivos binários que não devem ser modificados
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+*.zip binary
+*.pdf binary 

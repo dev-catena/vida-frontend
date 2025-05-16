@@ -139,13 +139,11 @@ async function excluirPrescricao(id) {
 }
 
 function formatarData(data) {
-  return new Date(data).toLocaleString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+  if (!data) return '';
+  const dataObj = new Date(data);
+  const hora = String(dataObj.getHours()).padStart(2, '0');
+  const minutos = String(dataObj.getMinutes()).padStart(2, '0');
+  return `${dataObj.toLocaleDateString('pt-BR')} ${hora}:${minutos}`;
 }
 
 onMounted(carregarPrescricoes)

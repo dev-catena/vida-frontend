@@ -25,7 +25,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="registro in registros" :key="registro.id">
+            <tr v-for="registro in registros" :key="registro.id" @click="editarRegistro(registro)">
               <td>{{ formatTime(registro.horario) }}</td>
               <td>{{ registro.cuidado || 'Não Consta' }}</td>
               <td>{{ registro.responsavel || 'Não Consta' }}</td>
@@ -33,7 +33,7 @@
               <td>
                 <button 
                   class="btn-executar" 
-                  @click="atualizarUltimaExecucao(registro)"
+                  @click.stop="atualizarUltimaExecucao(registro)"
                   :disabled="isUpdating === registro.id"
                 >
                   {{ isUpdating === registro.id ? 'Atualizando...' : 'Executar' }}
@@ -50,19 +50,19 @@
       </div>
     </div>
 
-    <!-- Modal de Registro -->
+    <!-- Modal de Registro/Edição -->
     <div v-if="showModal" class="modal">
       <div class="modal-content">
-        <h2>Novo Cuidado</h2>
+        <h2>{{ registroEditando ? 'Editar' : 'Novo' }} Cuidado</h2>
         <form @submit.prevent="salvarRegistro">
           <div class="form-group">
             <label>Horário</label>
-            <select v-model="form.horario" required>
-              <option value="">Selecione...</option>
-              <option v-for="hora in 24" :key="hora-1" :value="`${String(hora-1).padStart(2, '0')}:00`">
-                {{ hora-1 }}h
-              </option>
-            </select>
+            <input
+              type="time"
+              v-model="form.horario"
+              required
+              step="1"
+            />
           </div>
 
           <div class="form-group">
@@ -77,7 +77,7 @@
 
           <div class="modal-actions">
             <button type="button" class="btn-cancelar" @click="fecharModal">Cancelar</button>
-            <button type="submit" class="btn-salvar">Salvar</button>
+            <button type="submit" class="btn-salvar">{{ registroEditando ? 'Atualizar' : 'Salvar' }}</button>
           </div>
         </form>
       </div>
@@ -102,28 +102,29 @@ const authStore = useAuthStore();
 const registros = ref([]);
 const showModal = ref(false);
 const isUpdating = ref(null);
+const registroEditando = ref(null);
 const form = ref({
+  pessoa_id: '',
+  empresa_id: '',
   horario: '',
   cuidado: '',
-  responsavel: authStore.user?.nome || ''
+  responsavel: ''
 });
 
 const formatTime = (time) => {
   if (!time) return '';
-  // Formata o horário para HH:mm
-  const [hours, minutes] = time.split(':');
-  return `${hours}:${minutes}`;
+  // Transforma o horário do formato HH:MM:SS para texto (ex: "07:30:00" -> "7h30")
+  const [hora, minutos] = time.split(':');
+  const horaFormatada = hora.split('T')[1];
+  return `${parseInt(horaFormatada)}h${minutos}`;
 };
 
 const formatDateTime = (date) => {
   if (!date) return 'Não executado';
   const data = new Date(date);
-  const dia = String(data.getDate()).padStart(2, '0');
-  const mes = String(data.getMonth() + 1).padStart(2, '0');
-  const ano = data.getFullYear();
   const hora = String(data.getHours()).padStart(2, '0');
-  const minuto = String(data.getMinutes()).padStart(2, '0');
-  return `${dia}/${mes}/${ano} ${hora}:${minuto}`;
+  const minutos = String(data.getMinutes()).padStart(2, '0');
+  return `${hora}:${minutos}`;
 };
 
 const carregarRegistros = async () => {
@@ -145,21 +146,35 @@ const carregarRegistros = async () => {
 
 const atualizarUltimaExecucao = async (registro) => {
   try {
-    isUpdating.value = registro.id;
-    
-    // Verifica se o usuário está autenticado
-    if (!authStore.token || !authStore.user) {
-      console.error('Usuário não autenticado');
+    if (!authStore.user) {
+      alert('Usuário não autenticado');
       return;
     }
 
+    isUpdating.value = registro.id;
+    
+    // Formata a data para o formato esperado pelo backend (YYYY-MM-DD HH:mm:ss)
+    const dataAtual = new Date();
+    const ultimaExecucao = dataAtual.toISOString().slice(0, 19).replace('T', ' ');
+    
+    // Formata o horário para o formato H:i
+    const [hora, minutos] = registro.horario.split(':');
+    const horaFormatada = hora.split('T')[1];
+    const horarioFormatado = `0${parseInt(horaFormatada)}:${minutos}`;
+    console.log(horarioFormatado);
+    
     const dados = {
-      ultima_execucao: new Date().toISOString(),
+      pessoa_id: props.pessoaId,
+      empresa_id: authStore.user.empresa_id,
+      horario: horarioFormatado,
+      cuidado: registro.cuidado,
+      responsavel: registro.responsavel,
+      ultima_execucao: ultimaExecucao
     };
 
-    console.log('Dados sendo enviados:', dados);
+    console.log('Dados sendo enviados:', dados); // Log para debug
 
-    const response = await api.patch(`/cuidados/atualizar/${registro.id}`, dados, {
+    await api.patch(`/cuidados/atualizar/${registro.id}`, dados, {
       headers: {
         'Authorization': `Bearer ${authStore.token}`,
         'Accept': 'application/json',
@@ -167,16 +182,18 @@ const atualizarUltimaExecucao = async (registro) => {
       }
     });
 
-    console.log('Resposta do servidor:', response.data);
     await carregarRegistros();
   } catch (error) {
     console.error('Erro ao atualizar última execução:', error);
-    if (error.response) {
-      console.error('Detalhes do erro:', {
-        status: error.response.status,
-        data: error.response.data,
-        headers: error.response.headers
-      });
+    if (error.response?.status === 401) {
+      alert('Sessão expirada. Por favor, faça login novamente.');
+    } else if (error.response?.status === 403) {
+      alert('Você não tem permissão para realizar esta operação.');
+    } else if (error.response?.status === 422) {
+      const mensagens = Object.values(error.response.data.errors || {}).flat();
+      alert(mensagens.length > 0 ? mensagens.join('\n') : 'Dados inválidos. Por favor, verifique os campos.');
+    } else {
+      alert('Erro ao atualizar execução. Por favor, tente novamente.');
     }
   } finally {
     isUpdating.value = null;
@@ -184,7 +201,14 @@ const atualizarUltimaExecucao = async (registro) => {
 };
 
 const abrirNovoRegistro = () => {
+  if (!authStore.user) {
+    alert('Usuário não autenticado');
+    return;
+  }
+
   form.value = {
+    pessoa_id: props.pessoaId,
+    empresa_id: authStore.user.empresa_id || '',
     horario: '',
     cuidado: '',
     responsavel: authStore.user?.nome || ''
@@ -192,32 +216,81 @@ const abrirNovoRegistro = () => {
   showModal.value = true;
 };
 
+const editarRegistro = (registro) => {
+  if (!authStore.user) {
+    alert('Usuário não autenticado');
+    return;
+  }
+
+  registroEditando.value = registro;
+  form.value = {
+    pessoa_id: props.pessoaId,
+    empresa_id: authStore.user.empresa_id || '',
+    horario: registro.horario,
+    cuidado: registro.cuidado,
+    responsavel: registro.responsavel
+  };
+  showModal.value = true;
+};
+
 const fecharModal = () => {
   showModal.value = false;
+  registroEditando.value = null;
   form.value = {
+    pessoa_id: '',
+    empresa_id: '',
     horario: '',
     cuidado: '',
-    responsavel: authStore.user?.nome || ''
+    responsavel: ''
   };
 };
 
 const salvarRegistro = async () => {
   try {
+    if (!authStore.user) {
+      alert('Usuário não autenticado');
+      return;
+    }
+
+    if (!authStore.user.empresa_id) {
+      alert('Empresa não identificada');
+      return;
+    }
+
+    // Garante que o horário esteja no formato HH:MM:SS
+    const horario = form.value.horario + ':00';
+    
     const dados = {
-      ...form.value,
-      pessoa_id: props.pessoaId
+      pessoa_id: props.pessoaId,
+      empresa_id: authStore.user.empresa_id,
+      horario: horario,
+      cuidado: form.value.cuidado,
+      responsavel: form.value.responsavel
     };
 
-    await api.post('/cuidados/cadastrar', dados, {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`
-      }
-    });
+    if (registroEditando.value) {
+      await api.patch(`/cuidados/atualizar/${registroEditando.value.id}`, dados, {
+        headers: {
+          Authorization: `Bearer ${authStore.token}`
+        }
+      });
+    } else {
+      await api.post('/cuidados/cadastrar', dados, {
+        headers: {
+          Authorization: `Bearer ${authStore.token}`
+        }
+      });
+    }
 
     await carregarRegistros();
     fecharModal();
   } catch (error) {
     console.error('Erro ao salvar registro:', error);
+    if (error.response?.status === 401) {
+      alert('Sessão expirada. Por favor, faça login novamente.');
+    } else {
+      alert('Erro ao salvar registro. Por favor, tente novamente.');
+    }
   }
 };
 
@@ -389,5 +462,44 @@ th {
   text-align: center;
   padding: 20px;
   color: var(--cor-fonte-fraca);
+}
+
+tr {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+tr:hover {
+  background-color: var(--cor-hover);
+}
+
+.horario-inputs {
+  display: flex;
+  gap: 10px;
+}
+
+.horario-inputs input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid var(--cor-separador);
+  border-radius: var(--raio);
+  font-size: 14px;
+  background-color: white;
+  text-align: center;
+}
+
+.horario-inputs input:focus {
+  border-color: var(--cor-primaria);
+  outline: none;
+}
+
+.horario-inputs input::-webkit-inner-spin-button,
+.horario-inputs input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.horario-inputs input[type=number] {
+  -moz-appearance: textfield;
 }
 </style> 

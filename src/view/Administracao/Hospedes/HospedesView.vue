@@ -49,34 +49,37 @@
               Mostrar apenas admitidos
             </label>
           </div>
-          <button class="btn-pre-admissao" @click="abrirPreAdmissao">
-            Pré-admissão
-          </button>
         </div>
       </div>
 
+      <div class="action-bar">
+        <button class="btn-pre-admissao" @click="abrirNovoHospede">
+          Novo Hóspede
+        </button>
+      </div>
+
       <!-- Modal de Pré-admissão -->
-      <div v-if="showPreAdmissaoModal" class="modal">
+      <div v-if="showNovoHospedeModal" class="modal">
         <div class="modal-content">
-          <h2>Pré-admissão</h2>
-          <form @submit.prevent="salvarPreAdmissao">
+          <h2>Novo Hóspede</h2>
+          <form @submit.prevent="salvarNovoHospede">
             <!-- Dados Pessoais -->
             <div class="form-section">
               <h3>Dados Pessoais</h3>
               <div class="form-columns">
                 <div class="form-group">
                   <label>Nome Completo</label>
-                  <input type="text" v-model="preAdmissao.nome" required />
+                  <input type="text" v-model="novoHospede.nome" required />
                 </div>
 
                 <div class="form-group">
                   <label>Data de Nascimento</label>
-                  <input type="date" v-model="preAdmissao.data_nascimento" required />
+                  <input type="date" v-model="novoHospede.data_nascimento" required />
                 </div>
 
                 <div class="form-group">
                   <label>Gênero</label>
-                  <select v-model="preAdmissao.genero" required>
+                  <select v-model="novoHospede.genero" required>
                     <option value="">Selecione...</option>
                     <option value="M">Masculino</option>
                     <option value="F">Feminino</option>
@@ -86,17 +89,17 @@
 
                 <div class="form-group">
                   <label>CPF</label>
-                  <input type="text" v-model="preAdmissao.cpf" required />
+                  <input type="text" v-model="novoHospede.cpf" required />
                 </div>
 
                 <div class="form-group">
                   <label>Telefone</label>
-                  <input type="tel" v-model="preAdmissao.telefone" required />
+                  <input type="tel" v-model="novoHospede.telefone" required />
                 </div>
 
                 <div class="form-group">
                   <label>E-mail</label>
-                  <input type="email" v-model="preAdmissao.email" required />
+                  <input type="email" v-model="novoHospede.email" required />
                 </div>
               </div>
             </div>
@@ -107,16 +110,17 @@
               <div class="form-columns">
                 <div class="form-group">
                   <label>Modalidade de Moradia</label>
-                  <select v-model="preAdmissao.modalidade_moradia" required>
+                  <select v-model="novoHospede.modalidade_moradia" required>
                     <option value="">Selecione...</option>
                     <option value="temporaria">Temporária</option>
+                    <option value="daycare">Day Care</option>
                     <option value="definitiva">Definitiva</option>
                   </select>
                 </div>
 
                 <div class="form-group">
                   <label>Unidade</label>
-                  <input type="text" v-model="preAdmissao.unidade" required />
+                  <input type="text" v-model="novoHospede.unidade" required />
                 </div>
               </div>
             </div>
@@ -127,20 +131,20 @@
               <div class="form-columns">
                 <div class="form-group">
                   <label>Profissão</label>
-                  <input type="text" v-model="preAdmissao.profissao" />
+                  <input type="text" v-model="novoHospede.profissao" />
                 </div>
               </div>
             </div>
 
             <!-- Dados do Responsável -->
             <div class="form-section">
-              <h3>Dados do Responsável</h3>
+              <h3>Dados do Responsável Financeiro</h3>
               <div class="form-columns">
                 <div class="form-group">
                   <label>Nome do Responsável*</label>
                   <input 
                     type="text" 
-                    v-model="preAdmissao.responsavel_nome" 
+                    v-model="novoHospede.responsavel_nome" 
                     required 
                   />
                 </div>
@@ -148,7 +152,7 @@
                 <div class="form-group">
                   <label>Parentesco*</label>
                   <select 
-                    v-model="preAdmissao.responsavel_parentesco" 
+                    v-model="novoHospede.responsavel_parentesco" 
                     required
                   >
                     <option value="">Selecione...</option>
@@ -165,7 +169,7 @@
                   <label>Contato do Responsável*</label>
                   <input 
                     type="tel" 
-                    v-model="preAdmissao.responsavel_contato" 
+                    v-model="novoHospede.responsavel_contato" 
                     v-mask="'(##) #####-####'"
                     required 
                   />
@@ -175,7 +179,7 @@
                   <label>E-mail do Responsável</label>
                   <input 
                     type="email" 
-                    v-model="preAdmissao.responsavel_email" 
+                    v-model="novoHospede.responsavel_email" 
                   />
                 </div>
 
@@ -183,7 +187,7 @@
                   <label>Profissão do Responsável</label>
                   <input 
                     type="text" 
-                    v-model="preAdmissao.responsavel_profissao" 
+                    v-model="novoHospede.responsavel_profissao" 
                   />
                 </div>
 
@@ -191,7 +195,7 @@
                   <label>Endereço do Responsável</label>
                   <input 
                     type="text" 
-                    v-model="preAdmissao.responsavel_endereco" 
+                    v-model="novoHospede.responsavel_endereco" 
                   />
                 </div>
               </div>
@@ -203,12 +207,12 @@
               <div class="form-columns">
                 <div class="form-group">
                   <label>Procedência</label>
-                  <input type="text" v-model="preAdmissao.procedencia" required />
+                  <input type="text" v-model="novoHospede.procedencia" required />
                 </div>
 
                 <div class="form-group">
                   <label>Data de Admissão</label>
-                  <input type="date" v-model="preAdmissao.data_admissao" required />
+                  <input type="date" v-model="novoHospede.data_admissao" required />
                 </div>
               </div>
             </div>
@@ -219,27 +223,27 @@
               <div class="form-columns">
                 <div class="form-group full-width">
                   <label>Quadro Clínico</label>
-                  <textarea v-model="preAdmissao.quadro_clinico" rows="3"></textarea>
+                  <textarea v-model="novoHospede.quadro_clinico" rows="3"></textarea>
                 </div>
 
                 <div class="form-group full-width">
                   <label>Alergias</label>
-                  <textarea v-model="preAdmissao.alergias" rows="2"></textarea>
+                  <textarea v-model="novoHospede.alergias" rows="2"></textarea>
                 </div>
 
                 <div class="form-group">
                   <label>Médico Assistente</label>
-                  <input type="text" v-model="preAdmissao.medico_assistente" />
+                  <input type="text" v-model="novoHospede.medico_assistente" />
                 </div>
 
                 <div class="form-group">
                   <label>Plano de Saúde</label>
-                  <input type="text" v-model="preAdmissao.plano_saude" />
+                  <input type="text" v-model="novoHospede.plano_saude" />
                 </div>
 
                 <div class="form-group">
                   <label>Uso de Oxigênio</label>
-                  <select v-model="preAdmissao.uso_oxigenio">
+                  <select v-model="novoHospede.uso_oxigenio">
                     <option value="">Selecione...</option>
                     <option value="sim">Sim</option>
                     <option value="nao">Não</option>
@@ -254,7 +258,7 @@
               <div class="form-columns">
                 <div class="form-group">
                   <label>Tipo de Alimentação</label>
-                  <select v-model="preAdmissao.tipo_alimentacao">
+                  <select v-model="novoHospede.tipo_alimentacao">
                     <option value="">Selecione...</option>
                     <option value="normal">Normal</option>
                     <option value="dieta">Dieta</option>
@@ -265,7 +269,7 @@
 
                 <div class="form-group full-width">
                   <label>Restrições Alimentares</label>
-                  <textarea v-model="preAdmissao.restricoes_alimentares" rows="2"></textarea>
+                  <textarea v-model="novoHospede.restricoes_alimentares" rows="2"></textarea>
                 </div>
               </div>
             </div>
@@ -276,28 +280,28 @@
               <div class="form-columns">
                 <div class="form-group full-width">
                   <label>Lesões de Pele</label>
-                  <textarea v-model="preAdmissao.lesoes_pele" rows="2"></textarea>
+                  <textarea v-model="novoHospede.lesoes_pele" rows="2"></textarea>
                 </div>
 
                 <div class="form-group full-width">
                   <label>Uso de Medicamentos</label>
-                  <textarea v-model="preAdmissao.uso_medicamentos" rows="3"></textarea>
+                  <textarea v-model="novoHospede.uso_medicamentos" rows="3"></textarea>
                 </div>
 
                 <div class="form-group full-width">
                   <label>Expectativas da Família</label>
-                  <textarea v-model="preAdmissao.expectativas_familiares" rows="3"></textarea>
+                  <textarea v-model="novoHospede.expectativas_familiares" rows="3"></textarea>
                 </div>
 
                 <div class="form-group full-width">
                   <label>Observações</label>
-                  <textarea v-model="preAdmissao.observacoes" rows="3"></textarea>
+                  <textarea v-model="novoHospede.observacoes" rows="3"></textarea>
                 </div>
               </div>
             </div>
 
             <div class="modal-actions">
-              <button type="button" class="btn-cancelar" @click="fecharPreAdmissaoModal">
+              <button type="button" class="btn-cancelar" @click="fecharNovoHospedeModal">
                 Cancelar
               </button>
               <button type="submit" class="btn-salvar">
@@ -567,8 +571,8 @@ const filteredPessoas = ref([]);
 const selectedPessoa = ref(null);
 const activeCard = ref(null);
 const searchTimeout = ref(null);
-const showPreAdmissaoModal = ref(false);
-const preAdmissao = ref({
+const showNovoHospedeModal = ref(false);
+const novoHospede = ref({
   nome: '',
   data_nascimento: '',
   genero: '',
@@ -744,13 +748,49 @@ const handleSearch = () => {
   }, 300);
 };
 
-const abrirPreAdmissao = () => {
-  showPreAdmissaoModal.value = true;
+const abrirNovoHospede = async () => {
+  try {
+    showNovoHospedeModal.value = true;
+    // Limpa o formulário
+    novoHospede.value = {
+      nome: '',
+      data_nascimento: '',
+      genero: '',
+      cpf: '',
+      telefone: '',
+      email: '',
+      observacoes: '',
+      modalidade_moradia: '',
+      unidade: 'Matriz',
+      profissao: '',
+      responsavel_nome: '',
+      responsavel_parentesco: '',
+      responsavel_contato: '',
+      responsavel_email: '',
+      responsavel_profissao: '',
+      responsavel_endereco: '',
+      procedencia: '',
+      data_admissao: '',
+      quadro_clinico: '',
+      alergias: '',
+      medico_assistente: '',
+      expectativas_familiares: '',
+      plano_saude: '',
+      uso_oxigenio: '',
+      tipo_alimentacao: '',
+      restricoes_alimentares: '',
+      lesoes_pele: '',
+      uso_medicamentos: ''
+    };
+  } catch (erro) {
+    console.error('Erro ao abrir formulário:', erro);
+    alert(`Erro ao abrir formulário: ${erro.response?.data?.message || erro.message}`);
+  }
 };
 
-const fecharPreAdmissaoModal = () => {
-  showPreAdmissaoModal.value = false;
-  preAdmissao.value = {
+const fecharNovoHospedeModal = () => {
+  showNovoHospedeModal.value = false;
+  novoHospede.value = {
     nome: '',
     data_nascimento: '',
     genero: '',
@@ -759,7 +799,7 @@ const fecharPreAdmissaoModal = () => {
     email: '',
     observacoes: '',
     modalidade_moradia: '',
-    unidade: '',
+    unidade: 'Matriz',
     profissao: '',
     responsavel_nome: '',
     responsavel_parentesco: '',
@@ -782,70 +822,81 @@ const fecharPreAdmissaoModal = () => {
   };
 };
 
-const salvarPreAdmissao = async () => {
+const salvarNovoHospede = async () => {
   try {
     // Formata os dados antes de enviar
     const dadosFormatados = {
-      codigo: 'h0001',
-      mobilidade_classe_id: 1,
-      pessoa_tipo_id: 1,
-      nome: preAdmissao.value.nome,
-      CPF: preAdmissao.value.cpf,
-      data_nascimento: preAdmissao.value.data_nascimento,
-      sexo: preAdmissao.value.genero,
-      telefone: preAdmissao.value.telefone,
-      email: preAdmissao.value.email,
-      modalidade_moradia: preAdmissao.value.modalidade_moradia,
-      unidade: preAdmissao.value.unidade,
-      profissao: preAdmissao.value.profissao,
-      status: true,
-      admitido: false,
-      // Dados do responsável
-      responsavel: {
-        nome: preAdmissao.value.responsavel_nome,
-        parentesco: preAdmissao.value.responsavel_parentesco,
-        contato: preAdmissao.value.responsavel_contato,
-        email: preAdmissao.value.responsavel_email,
-        profissao: preAdmissao.value.responsavel_profissao,
-        endereco: preAdmissao.value.responsavel_endereco,
-        status: true
-      },
+      nome: novoHospede.value.nome,
+      CPF: novoHospede.value.cpf,
+      data_nascimento: novoHospede.value.data_nascimento,
+      email: novoHospede.value.email,
+      telefone: novoHospede.value.telefone,
+      sexo: novoHospede.value.genero,
+      mobilidade_classe_id: selectedPessoa.value?.mobilidade_classe_id || 1,
+      pessoa_tipo_id: selectedPessoa.value?.pessoa_tipo_id || 1,
+      responsaveis: [
+        {
+          nome: novoHospede.value.responsavel_nome,
+          contato: novoHospede.value.responsavel_contato,
+          email: novoHospede.value.responsavel_email,
+          parentesco: novoHospede.value.responsavel_parentesco,
+          endereco: novoHospede.value.responsavel_endereco,
+          profissao: novoHospede.value.responsavel_profissao,
+          status: true
+        }
+      ],
       // Dados de saúde
-      quadro_clinico: preAdmissao.value.quadro_clinico,
-      alergias: preAdmissao.value.alergias,
-      medico_assistente: preAdmissao.value.medico_assistente,
-      plano_saude: preAdmissao.value.plano_saude,
-      uso_oxigenio: preAdmissao.value.uso_oxigenio === 'sim',
-      tipo_alimentacao: preAdmissao.value.tipo_alimentacao,
-      restricoes_alimentares: preAdmissao.value.restricoes_alimentares,
-      lesoes_pele: preAdmissao.value.lesoes_pele,
-      uso_medicamentos: preAdmissao.value.uso_medicamentos,
-      expectativas_familiares: preAdmissao.value.expectativas_familiares,
-      observacoes: preAdmissao.value.observacoes,
-      procedencia: preAdmissao.value.procedencia,
-      data_admissao: preAdmissao.value.data_admissao
+      quadro_clinico: novoHospede.value.quadro_clinico,
+      alergias: novoHospede.value.alergias,
+      medico_assistente: novoHospede.value.medico_assistente,
+      plano_saude: novoHospede.value.plano_saude,
+      uso_oxigenio: novoHospede.value.uso_oxigenio === 'sim',
+      tipo_alimentacao: novoHospede.value.tipo_alimentacao,
+      restricoes_alimentares: novoHospede.value.restricoes_alimentares,
+      lesoes_pele: novoHospede.value.lesoes_pele,
+      uso_medicamentos: novoHospede.value.uso_medicamentos,
+      expectativas_familiares: novoHospede.value.expectativas_familiares,
+      observacoes: novoHospede.value.observacoes,
+      procedencia: novoHospede.value.procedencia,
+      data_admissao: novoHospede.value.data_admissao,
+      modalidade_moradia: novoHospede.value.modalidade_moradia,
+      unidade: novoHospede.value.unidade,
+      profissao: novoHospede.value.profissao,
+      status: true,
+      admitido: selectedPessoa.value?.admitido || false
     };
 
     console.log('Dados formatados para envio:', dadosFormatados);
 
-    const response = await api.post('/pessoa/cadastrar', dadosFormatados, {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`
-      }
-    });
-    
-    if (response.data) {
-      // Fecha o modal e recarrega a lista de pessoas
-      fecharPreAdmissaoModal();
-      await carregarPessoas();
-      
-      // Exibe mensagem de sucesso
-      alert('Pessoa cadastrada com sucesso!');
+    let response;
+    if (selectedPessoa.value) {
+      // Se estiver editando, usa PATCH
+      response = await api.patch(`/pessoa/atualizar/${selectedPessoa.value.id}`, dadosFormatados, {
+        headers: {
+          Authorization: `Bearer ${authStore.token}`
+        }
+      });
+    } else {
+      // Se for novo hóspede, usa POST
+      response = await api.post('/pessoa/cadastrar', dadosFormatados, {
+        headers: {
+          Authorization: `Bearer ${authStore.token}`
+        }
+      });
     }
-  } catch (error) {
-    console.error('Erro ao cadastrar pessoa:', error);
-    // Exibe mensagem de erro mais detalhada
-    alert(`Erro ao cadastrar pessoa: ${error.response?.data?.message || error.message}`);
+
+    console.log('Resposta do servidor:', response.data);
+    alert(selectedPessoa.value ? 'Hóspede atualizado com sucesso!' : 'Hóspede cadastrado com sucesso!');
+    fecharNovoHospedeModal();
+    await carregarPessoas();
+  } catch (erro) {
+    console.error('Erro ao salvar hóspede:', erro);
+    if (erro.response?.status === 422) {
+      const mensagens = Object.values(erro.response.data.errors).flat();
+      alert(mensagens.join('\n'));
+    } else {
+      alert(`Erro ao salvar hóspede: ${erro.response?.data?.message || erro.message}`);
+    }
   }
 };
 
@@ -896,6 +947,8 @@ const selectCard = (route) => {
     abrirProntuario(selectedPessoa.value);
   } else if (route === 'checkin') {
     abrirCheckInModal();
+  } else if (route === 'informacoes') {
+    abrirEdicaoHospede();
   } else {
     activeCard.value = route;
   }
@@ -931,7 +984,17 @@ const carregarResponsaveis = async () => {
   try {
     console.log('Carregando responsáveis para pessoa:', selectedPessoa.value);
     
-    // Verifica se a pessoa selecionada tem responsáveis
+    // Busca os dados atualizados da pessoa incluindo responsáveis
+    const response = await api.get(`/pessoa/buscar/${selectedPessoa.value.id}`, {
+      headers: {
+        Authorization: `Bearer ${authStore.token}`
+      }
+    });
+
+    // Atualiza a pessoa selecionada com os dados mais recentes
+    selectedPessoa.value = response.data;
+    
+    // Atualiza a lista de responsáveis
     if (selectedPessoa.value && selectedPessoa.value.responsaveis) {
       responsaveis.value = selectedPessoa.value.responsaveis;
       console.log('Responsáveis carregados:', responsaveis.value);
@@ -939,8 +1002,8 @@ const carregarResponsaveis = async () => {
       console.log('Nenhum responsável encontrado para esta pessoa');
       responsaveis.value = [];
     }
-  } catch (error) {
-    console.error('Erro ao carregar responsáveis:', error);
+  } catch (erro) {
+    console.error('Erro ao carregar responsáveis:', erro);
     responsaveis.value = [];
   }
 };
@@ -967,37 +1030,53 @@ const excluirResponsavel = async (responsavel) => {
   if (!confirm('Tem certeza que deseja excluir este responsável?')) return;
 
   try {
+    // Filtra os responsáveis, removendo o que será excluído
+    const responsaveisAtualizados = selectedPessoa.value.responsaveis.filter(r => r.id !== responsavel.id);
+
     // Prepara os dados da pessoa com os responsáveis atualizados
-    const data = {
+    const dadosAtualizados = {
       nome: selectedPessoa.value.nome,
       CPF: selectedPessoa.value.CPF,
       sexo: selectedPessoa.value.sexo,
       data_nascimento: selectedPessoa.value.data_nascimento,
       mobilidade_classe_id: selectedPessoa.value.mobilidade_classe_id,
       pessoa_tipo_id: selectedPessoa.value.pessoa_tipo_id,
-      responsaveis: selectedPessoa.value.responsaveis.filter(r => r.id !== responsavel.id)
+      responsaveis: responsaveisAtualizados // Array vazio se era o único responsável, ou array sem o responsável removido
     };
 
+    console.log('Dados para atualização:', dadosAtualizados);
+
     // Envia para a rota de atualização
-    await api.patch(`/pessoa/atualizar/${selectedPessoa.value.id}`, data, {
+    const response = await api.patch(`/pessoa/atualizar/${selectedPessoa.value.id}`, dadosAtualizados, {
       headers: {
         Authorization: `Bearer ${authStore.token}`
       }
     });
+
+    console.log('Resposta da atualização:', response.data);
 
     // Atualiza a pessoa selecionada com os novos dados
-    const response = await api.get(`/pessoa/${selectedPessoa.value.id}`, {
+    const pessoaAtualizada = await api.get(`/pessoa/buscar/${selectedPessoa.value.id}`, {
       headers: {
         Authorization: `Bearer ${authStore.token}`
       }
     });
-    selectedPessoa.value = response.data;
 
+    console.log('Dados atualizados da pessoa:', pessoaAtualizada.data);
+
+    // Atualiza o estado local
+    selectedPessoa.value = pessoaAtualizada.data;
+    
+    // Atualiza a lista de responsáveis
     await carregarResponsaveis();
+    
+    // Atualiza a lista de pessoas
+    await carregarPessoas();
+
     alert('Responsável excluído com sucesso!');
-  } catch (error) {
-    console.error('Erro ao excluir responsável:', error);
-    alert(`Erro ao excluir responsável: ${error.response?.data?.message || error.message}`);
+  } catch (erro) {
+    console.error('Erro ao excluir responsável:', erro);
+    alert(`Erro ao excluir responsável: ${erro.response?.data?.message || erro.message}`);
   }
 };
 
@@ -1037,7 +1116,7 @@ const salvarResponsavel = async () => {
     });
 
     // Atualiza a pessoa selecionada com os novos dados
-    const response = await api.get(`/pessoa/${selectedPessoa.value.id}`, {
+    const response = await api.get(`/pessoa/buscar/${selectedPessoa.value.id}`, {
       headers: {
         Authorization: `Bearer ${authStore.token}`
       }
@@ -1131,7 +1210,7 @@ const salvarCheckIn = async () => {
     });
 
     // Atualiza a pessoa selecionada com os novos dados
-    const response = await api.get(`/pessoa/${selectedPessoa.value.id}`, {
+    const response = await api.get(`/pessoa/buscar/${selectedPessoa.value.id}`, {
       headers: {
         Authorization: `Bearer ${authStore.token}`
       }
@@ -1170,7 +1249,7 @@ const excluirCheckIn = async (checkin) => {
     });
 
     // Atualiza a pessoa selecionada com os novos dados
-    const response = await api.get(`/pessoa/${selectedPessoa.value.id}`, {
+    const response = await api.get(`/pessoa/buscar/${selectedPessoa.value.id}`, {
       headers: {
         Authorization: `Bearer ${authStore.token}`
       }
@@ -1187,6 +1266,43 @@ const excluirCheckIn = async (checkin) => {
 
 const cancelarCheckIn = () => {
   limparFormCheckIn();
+};
+
+const abrirEdicaoHospede = () => {
+  if (!selectedPessoa.value) return;
+  
+  showNovoHospedeModal.value = true;
+  // Preenche o formulário com os dados do hóspede selecionado
+  novoHospede.value = {
+    nome: selectedPessoa.value.nome || '',
+    data_nascimento: selectedPessoa.value.data_nascimento || '',
+    genero: selectedPessoa.value.sexo || '',
+    cpf: selectedPessoa.value.CPF || '',
+    telefone: selectedPessoa.value.telefone || '',
+    email: selectedPessoa.value.email || '',
+    observacoes: selectedPessoa.value.observacoes || '',
+    modalidade_moradia: selectedPessoa.value.modalidade_moradia || '',
+    unidade: selectedPessoa.value.unidade || 'Matriz',
+    profissao: selectedPessoa.value.profissao || '',
+    responsavel_nome: selectedPessoa.value.responsaveis?.[0]?.nome || '',
+    responsavel_parentesco: selectedPessoa.value.responsaveis?.[0]?.parentesco || '',
+    responsavel_contato: selectedPessoa.value.responsaveis?.[0]?.contato || '',
+    responsavel_email: selectedPessoa.value.responsaveis?.[0]?.email || '',
+    responsavel_profissao: selectedPessoa.value.responsaveis?.[0]?.profissao || '',
+    responsavel_endereco: selectedPessoa.value.responsaveis?.[0]?.endereco || '',
+    procedencia: selectedPessoa.value.procedencia || '',
+    data_admissao: selectedPessoa.value.data_admissao || '',
+    quadro_clinico: selectedPessoa.value.quadro_clinico || '',
+    alergias: selectedPessoa.value.alergias || '',
+    medico_assistente: selectedPessoa.value.medico_assistente || '',
+    expectativas_familiares: selectedPessoa.value.expectativas_familiares || '',
+    plano_saude: selectedPessoa.value.plano_saude || '',
+    uso_oxigenio: selectedPessoa.value.uso_oxigenio ? 'sim' : 'nao',
+    tipo_alimentacao: selectedPessoa.value.tipo_alimentacao || '',
+    restricoes_alimentares: selectedPessoa.value.restricoes_alimentares || '',
+    lesoes_pele: selectedPessoa.value.lesoes_pele || '',
+    uso_medicamentos: selectedPessoa.value.uso_medicamentos || ''
+  };
 };
 
 onMounted(() => {
@@ -1801,5 +1917,13 @@ tr:hover {
 
 .checkin-form {
   padding-left: var(--margem);
+}
+
+.action-bar {
+  padding: var(--margem);
+  background: white;
+  border-bottom: 1px solid var(--cor-separador);
+  display: flex;
+  justify-content: flex-end;
 }
 </style> 
