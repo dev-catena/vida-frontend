@@ -25,7 +25,7 @@
               <th>Saturação O2</th>
               <th>Glicemia</th>
               <th>Responsável</th>
-              <th>Observações</th>
+              <th>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -40,7 +40,9 @@
               <td>{{ registro.saturacao_oxigenio ? `${registro.saturacao_oxigenio}%` : 'Não Consta' }}</td>
               <td>{{ registro.glicemia ? `${registro.glicemia} mg/dL` : 'Não Consta' }}</td>
               <td>{{ registro.responsavel || 'Não Consta' }}</td>
-              <td>{{ registro.observacao || 'Não Consta' }}</td>
+              <td>
+                <button class="btn-editar" @click="editarRegistro(registro)">Editar</button>
+              </td>
             </tr>
             <tr v-if="registros.length === 0">
               <td colspan="9" class="no-records">
@@ -237,6 +239,21 @@ const salvarRegistro = async () => {
     console.error('Erro ao salvar registro:', error);
   }
 };
+
+const editarRegistro = (registro) => {
+  form.value = {
+    id: registro.id,
+    temperatura: registro.temperatura,
+    peso: registro.peso,
+    altura: registro.altura,
+    frequencia_cardiaca: registro.frequencia_cardiaca,
+    frequencia_respiratoria: registro.frequencia_respiratoria,
+    pressao_arterial: registro.pressao_arterial,
+    glicemia: registro.glicemia,
+    observacoes: registro.observacoes
+  }
+  showModal.value = true
+}
 
 // Observar mudanças no ID da pessoa
 watch(() => props.pessoaId, (newId) => {

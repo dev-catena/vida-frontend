@@ -18,24 +18,25 @@
               <th>Estágio</th>
               <th>Fase</th>
               <th>Dor</th>
+              <th>Contaminação</th>
               <th>Ações</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="registro in registros" :key="registro.id">
-              <td>{{ formatDateTime(registro.data_hora) }}</td>
-              <td>{{ getMarcacoesText(registro.local) }}</td>
-              <td>{{ registro.tipo || 'Não Consta' }}</td>
-              <td>{{ registro.estagio || 'Não Consta' }}</td>
-              <td>{{ registro.fase || 'Não Consta' }}</td>
-              <td>{{ registro.dor || 'Não Consta' }}</td>
+            <tr v-for="lesao in lesoes" :key="lesao.id">
+              <td>{{ lesao.data_hora }}</td>
+              <td>{{ lesao.localizacao }}</td>
+              <td>{{ lesao.tipo }}</td>
+              <td>{{ lesao.dimensoes }}</td>
+              <td>{{ lesao.estagio }}</td>
+              <td>{{ lesao.fase }}</td>
+              <td>{{ lesao.dor || 'Não Consta' }}</td>
+              <td>{{ lesao.contaminacao }}</td>
               <td>
-                <button class="btn-visualizar" @click="visualizarLesao(registro)">
-                  Visualizar
-                </button>
+                <button class="btn-editar" @click="editarLesao(lesao)">Editar</button>
               </td>
             </tr>
-            <tr v-if="registros.length === 0">
+            <tr v-if="lesoes.length === 0">
               <td colspan="7" class="no-records">
                 Nenhum registro encontrado
               </td>
@@ -337,7 +338,7 @@ const props = defineProps({
 });
 
 const authStore = useAuthStore();
-const registros = ref([]);
+const lesoes = ref([]);
 const showModal = ref(false);
 const showViewModal = ref(false);
 const selectedLesao = ref(null);
@@ -401,15 +402,15 @@ const carregarRegistros = async () => {
     console.log('Dados recebidos:', response.data);
 
     if (response.data && Array.isArray(response.data)) {
-      registros.value = response.data;
+      lesoes.value = response.data;
     } else if (response.data && response.data.data && Array.isArray(response.data.data)) {
-      registros.value = response.data.data;
+      lesoes.value = response.data.data;
     } else {
       console.warn('Formato de resposta inesperado:', response.data);
-      registros.value = [];
+      lesoes.value = [];
     }
 
-    console.log('Registros carregados:', registros.value);
+    console.log('Registros carregados:', lesoes.value);
   } catch (error) {
     console.error('Erro ao carregar registros:', error);
     console.error('Detalhes do erro:', {
@@ -417,7 +418,7 @@ const carregarRegistros = async () => {
       response: error.response?.data,
       status: error.response?.status
     });
-    registros.value = [];
+    lesoes.value = [];
   }
 };
 
@@ -514,33 +515,6 @@ const fecharModal = () => {
   selectedMarks.value = [];
 };
 
-const visualizarLesao = (lesao) => {
-  selectedLesao.value = lesao;
-  selectedMarks.value = []; // Limpar marcações anteriores
-
-  // Tentar carregar as marcações do campo local
-  if (lesao.local) {
-    try {
-      const marcas = typeof lesao.local === 'string' ? JSON.parse(lesao.local) : lesao.local;
-      
-      if (Array.isArray(marcas)) {
-        selectedMarks.value = marcas.map(marca => ({
-          x: marca.x,
-          y: marca.y,
-          color: getColorForType(lesao.tipo)
-        }));
-        console.log('Marcações carregadas:', selectedMarks.value);
-      } else {
-        console.warn('Formato de marcações inválido:', marcas);
-      }
-    } catch (error) {
-      console.error('Erro ao carregar marcações:', error);
-      selectedMarks.value = [];
-    }
-  }
-  showViewModal.value = true;
-};
-
 const fecharViewModal = () => {
   showViewModal.value = false;
   selectedLesao.value = null;
@@ -629,18 +603,26 @@ const salvarRegistro = async () => {
   }
 };
 
-const getMarcacoesText = (local) => {
-  if (!local) return 'Não Consta';
-  try {
-    const marcas = JSON.parse(local);
-    if (Array.isArray(marcas)) {
-      return `${marcas.length} marcação${marcas.length !== 1 ? 'ões' : ''} no corpo`;
-    }
-  } catch (error) {
-    console.warn('Erro ao parsear marcações:', error);
+const editarLesao = (lesao) => {
+  form.value = {
+    id: lesao.id,
+    localizacao: lesao.localizacao,
+    tipo: lesao.tipo,
+    dimensoes: lesao.dimensoes,
+    estagio: lesao.estagio,
+    fase: lesao.fase,
+    dor: lesao.dor,
+    contaminacao: lesao.contaminacao,
+    cor: lesao.cor,
+    aspecto: lesao.aspecto,
+    tipo_exsudato: lesao.tipo_exsudato,
+    quantidade: lesao.quantidade,
+    cor_secrecao: lesao.cor_secrecao,
+    observacoes: lesao.observacoes
   }
-  return 'Não Consta';
-};
+  selectedMarks.value = lesao.marcas || []
+  showModal.value = true
+}
 
 // Observar mudanças no ID da pessoa
 watch(() => props.pessoaId, (newId) => {

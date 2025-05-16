@@ -16,8 +16,10 @@ import configuracaoComponent from "./components/menu/configuracaoComponent.vue";
 import controleQuedaComponent from "./components/menu/controleQuedaComponent.vue";
 
 import "./assets/css/spec.css";
+import "./assets/css/main.css";
 
-axios.defaults.baseURL = process.env.VUE_APP_ROOT_API;
+axios.defaults.baseURL = process.env.VUE_APP_ROOT_API || 'http://localhost:3000/api';
+axios.defaults.headers.common['Content-Type'] = 'application/json';
 
 const app = createApp(App);
 const pinia = createPinia();

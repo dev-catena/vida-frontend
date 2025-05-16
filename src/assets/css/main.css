@@ -1,0 +1,191 @@
+:root {
+  /* Cores principais */
+  --cor-primaria: #FF9800;
+  --cor-primaria-escura: #F57C00;
+  --cor-secundaria: #FFC107;
+  --cor-secundaria-escura: #FFA000;
+  --cor-sucesso: #4CAF50;
+  --cor-sucesso-escura: #388E3C;
+  --cor-erro: #F44336;
+  --cor-erro-escura: #D32F2F;
+  --cor-aviso: #FF9800;
+  --cor-aviso-escura: #F57C00;
+
+  /* Cores de fundo e texto */
+  --cor-fundo: #F5F5F5;
+  --cor-fundo-card: #FFFFFF;
+  --cor-fonte: #333333;
+  --cor-fonte-fraca: #757575;
+  --cor-separador: #E0E0E0;
+  --cor-hover: #F5F5F5;
+
+  /* Espaçamentos */
+  --margem: 16px;
+  --raio: 4px;
+
+  /* Sombras */
+  --sombra-card: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --sombra-hover: 0 4px 8px rgba(0, 0, 0, 0.15);
+
+  /* Transições */
+  --transicao-rapida: 0.2s ease;
+  --transicao-normal: 0.3s ease;
+}
+
+/* Estilos globais */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: var(--cor-fundo);
+  color: var(--cor-fonte);
+  line-height: 1.5;
+}
+
+/* Estilos de botões */
+.btn-novo {
+  background: var(--cor-primaria);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--raio);
+  cursor: pointer;
+  transition: background-color var(--transicao-normal);
+}
+
+.btn-novo:hover {
+  background: var(--cor-primaria-escura);
+}
+
+.btn-editar {
+  background: var(--cor-secundaria);
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: var(--raio);
+  cursor: pointer;
+  transition: background-color var(--transicao-normal);
+}
+
+.btn-editar:hover {
+  background: var(--cor-secundaria-escura);
+}
+
+.btn-salvar {
+  background: var(--cor-sucesso);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--raio);
+  cursor: pointer;
+  transition: background-color var(--transicao-normal);
+}
+
+.btn-salvar:hover {
+  background: var(--cor-sucesso-escura);
+}
+
+.btn-cancelar {
+  background: var(--cor-fonte-fraca);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--raio);
+  cursor: pointer;
+  transition: background-color var(--transicao-normal);
+}
+
+.btn-cancelar:hover {
+  background: var(--cor-erro);
+}
+
+/* Estilos de tabela */
+.tabela {
+  background: var(--cor-fundo-card);
+  border-radius: var(--raio);
+  overflow: hidden;
+  box-shadow: var(--sombra-card);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--cor-separador);
+}
+
+th {
+  background: var(--cor-fundo);
+  font-weight: 600;
+}
+
+/* Estilos de modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--cor-fundo-card);
+  padding: var(--margem);
+  border-radius: var(--raio);
+  width: 100%;
+  max-width: 500px;
+}
+
+/* Estilos de formulário */
+.form-group {
+  margin-bottom: var(--margem);
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--cor-separador);
+  border-radius: var(--raio);
+  font-size: 14px;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Estilos de ações */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--margem);
+  margin-top: var(--margem);
+}
+
+/* Estilos de mensagens */
+.no-records {
+  text-align: center;
+  padding: 20px;
+  color: var(--cor-fonte-fraca);
+} 
