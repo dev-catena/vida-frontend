@@ -14,10 +14,9 @@
 </template>
 
 <script setup>
-import { useRouter, useRoute } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { ref, onMounted } from 'vue';
 
-const router = useRouter();
 const route = useRoute();
 const empresa = ref('');
 
@@ -25,9 +24,6 @@ onMounted(() => {
   empresa.value = route.params.empresa;
 });
 
-const navegarPara = (rota) => {
-  router.push(`/${empresa.value}/saude/${rota}`);
-};
 </script>
 
 <style scoped>

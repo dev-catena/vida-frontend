@@ -47,9 +47,15 @@ const router = createRouter({
     ...controleQuedaRoutes,
     ...prontuarioRoutes,
     {
-      path: '/:empresa/hospedagem',
-      name: 'Hospedagem',
-      component: () => import('@/view/Hospedagem/HospedagemView.vue'),
+      path: '/:empresa/hotelaria',
+      name: 'Hotelaria',
+      component: () => import('@/view/Hotelaria/HotelariaView.vue'),
+      beforeEnter: validarSessao,
+    },
+    {
+      path: '/:empresa/hotelaria/hospedes',
+      name: 'HotelariaHospedes',
+      component: () => import('@/view/Hotelaria/Hospedes/HospedesView.vue'),
       beforeEnter: validarSessao,
     },
     {
@@ -68,30 +74,6 @@ const router = createRouter({
       path: '/:empresa/administracao',
       name: 'Administracao',
       component: () => import('@/view/Administracao/AdministracaoView.vue'),
-      beforeEnter: validarSessao,
-    },
-    {
-      path: '/:empresa/administracao/hospedes',
-      name: 'AdministracaoHospedes',
-      component: () => import('@/view/Administracao/Hospedes/HospedesView.vue'),
-      beforeEnter: validarSessao,
-    },
-    {
-      path: '/:empresa/administracao/hospedes/novo',
-      name: 'AdministracaoHospedesNovo',
-      component: () => import('@/view/Administracao/Hospedes/CadastroView.vue'),
-      beforeEnter: validarSessao,
-    },
-    {
-      path: '/:empresa/administracao/hospedes/:id/editar',
-      name: 'AdministracaoHospedesEditar',
-      component: () => import('@/view/Administracao/Hospedes/CadastroView.vue'),
-      beforeEnter: validarSessao,
-    },
-    {
-      path: '/:empresa/administracao/hospedes/:id/responsaveis',
-      name: 'AdministracaoHospedesResponsaveis',
-      component: () => import('@/view/Administracao/Hospedes/ResponsaveisView.vue'),
       beforeEnter: validarSessao,
     },
     {

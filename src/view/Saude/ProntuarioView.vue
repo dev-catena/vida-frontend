@@ -4,12 +4,14 @@
       <div 
         v-for="card in cards" 
         :key="card.route"
-        class="card" 
-        :class="{ 'active': activeCard === card.route }"
+        class="bloco clicavel" 
+        :class="{ 'ativo': activeCard === card.route }"
         @click="selectCard(card.route)"
       >
-        <div :class="card.icon"></div>
-        <h3>{{ card.title }}</h3>
+        <div class="alinha-v alinha-centro">
+          <div :class="card.icon"></div>
+          <h3>{{ card.title }}</h3>
+        </div>
       </div>
     </div>
 
@@ -26,12 +28,12 @@
               placeholder="Buscar pessoa..."
               class="search-input"
             />
-            <div v-if="showResults && filteredPessoas.length > 0" class="search-results">
+            <div v-if="showResults && filteredPessoas.length > 0" class="jm">
               <div
                 v-for="pessoa in filteredPessoas"
                 :key="pessoa.id"
                 @click="selectPessoa(pessoa)"
-                class="search-result-item"
+                class="item"
               >
                 {{ pessoa.nome }}
               </div>
@@ -211,17 +213,17 @@ watch(() => pessoasStore.pessoaId, (newId) => {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: var(--cor-fundo);
+  background: var(--cor-bg);
 }
 
 .cards-container {
   display: flex;
-  gap: 12px;
+  gap: var(--margem);
   padding: var(--margem);
   overflow-x: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--cor-separador) transparent;
-  background: white;
+  background: var(--cor-bg);
   border-bottom: 1px solid var(--cor-separador);
 }
 
@@ -243,50 +245,6 @@ watch(() => pessoasStore.pessoaId, (newId) => {
   pointer-events: none;
 }
 
-.card {
-  background: white;
-  border-radius: var(--raio);
-  padding: 12px 20px;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
-  border: 1px solid var(--cor-separador);
-  min-width: fit-content;
-}
-
-.card:hover {
-  background: var(--cor-hover);
-  border-color: var(--cor-primaria);
-}
-
-.card.active {
-  background: var(--cor-primaria);
-  color: white;
-  border-color: var(--cor-primaria);
-}
-
-.card.active [class^="icone-"] {
-  filter: brightness(0) invert(1);
-}
-
-.card h3 {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.card [class^="icone-"] {
-  width: 24px;
-  height: 24px;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  transition: filter 0.2s;
-}
-
 .content-wrapper {
   flex: 1;
   display: flex;
@@ -296,7 +254,7 @@ watch(() => pessoasStore.pessoaId, (newId) => {
 
 .header {
   padding: var(--margem);
-  background: white;
+  background: var(--cor-bg);
   border-bottom: 1px solid var(--cor-separador);
 }
 
@@ -322,43 +280,17 @@ h1 {
   border-radius: var(--raio);
   outline: none;
   transition: all 0.3s;
-  background: white;
+  background: var(--cor-bg);
 }
 
 .search-input:focus {
   border-color: var(--cor-primaria);
-  box-shadow: 0 0 0 2px rgba(var(--cor-primaria-rgb), 0.1);
-}
-
-.search-results {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: white;
-  border: 1px solid var(--cor-separador);
-  border-radius: var(--raio);
-  margin-top: 4px;
-  max-height: 300px;
-  overflow-y: auto;
-  z-index: 1000;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.search-result-item {
-  padding: 12px 20px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  color: var(--cor-fonte);
-}
-
-.search-result-item:hover {
-  background-color: var(--cor-hover);
+  box-shadow: 0 0 0 2px var(--cor-primaria-fraca);
 }
 
 .content-area {
   flex: 1;
-  background: white;
+  background: var(--cor-bg);
   padding: var(--margem);
   overflow-y: auto;
 }
@@ -400,5 +332,129 @@ h1 {
 
 .icone-admissao {
   background-image: url('@/assets/icons/admissao.svg');
+}
+
+[class^="icone-"],
+[class*=" icone-"] {
+  border-radius: 12px;
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  position: relative;
+  line-height: 48px;
+  min-width: 48px;
+}
+
+[class^="icone-"]:before,
+[class*=" icone-"]:before {
+  content: "";
+  height: 48px;
+  width: 48px;
+  background: center center/20px auto no-repeat;
+  float: left;
+}
+
+[class^="icone-"]:not(:empty),
+[class*=" icone-"]:not(:empty) {
+  padding-right: var(--margem);
+}
+
+.tabela [class^="icone-"],
+[class^="icone-"].icone-menor,
+.tabela [class*=" icone-"],
+[class*=" icone-"].icone-menor {
+  line-height: 24px;
+  min-width: 36px;
+  margin: -2px 0;
+}
+
+.tabela [class^="icone-"]:before,
+[class^="icone-"].icone-menor:before,
+.tabela [class*="icone-"]:before,
+[class*=" icone-"].icone-menor:before {
+  width: 36px;
+  height: 24px;
+}
+
+.icone-novo:before {
+  background-image: url('@/assets/icons/add.svg');
+}
+
+.icone-editar:before {
+  background-image: url('@/assets/icons/editar.svg');
+}
+
+.icone-salvar:before {
+  background-image: url('@/assets/icons/apps-add.svg');
+}
+
+.icone-cancelar:before {
+  background-image: url('@/assets/icons/angle-small-right.svg');
+}
+
+.icone-deletar:before {
+  background-image: url('@/assets/icons/deletar.svg');
+}
+
+.icone-fechar:before {
+  background-image: url('@/assets/icons/menu.svg');
+}
+
+.btn-novo,
+.btn-editar,
+.btn-salvar,
+.btn-cancelar,
+.btn-deletar,
+.btn-fechar {
+  border-radius: 12px;
+  padding: 0;
+  min-width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transicao-normal);
+  background: var(--cor-bg);
+  border: 1px solid var(--cor-separador);
+}
+
+.btn-novo:hover,
+.btn-editar:hover,
+.btn-salvar:hover,
+.btn-cancelar:hover,
+.btn-deletar:hover,
+.btn-fechar:hover {
+  box-shadow: 0 0 0 1px var(--cor-separador) inset;
+}
+
+.btn-novo:active,
+.btn-editar:active,
+.btn-salvar:active,
+.btn-cancelar:active,
+.btn-deletar:active,
+.btn-fechar:active {
+  background-color: var(--cor-cinza);
+}
+
+.btn-novo.ativo,
+.btn-editar.ativo,
+.btn-salvar.ativo,
+.btn-cancelar.ativo,
+.btn-deletar.ativo,
+.btn-fechar.ativo {
+  background-color: var(--cor-primaria-fraca);
+  box-shadow: 0 0 0 1px var(--cor-primaria-media) inset;
+  color: var(--cor-primaria-forte);
+}
+
+.actions-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: var(--margem);
+  padding: 8px;
+  background: var(--cor-bg);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra-card);
 }
 </style> 

@@ -56,13 +56,7 @@
             <label>Frequência</label>
             <select v-model="form.frequencia" required>
               <option value="">Selecione...</option>
-              <option value="1x ao dia">1x ao dia</option>
-              <option value="2x ao dia">2x ao dia</option>
-              <option value="3x ao dia">3x ao dia</option>
-              <option value="4x ao dia">4x ao dia</option>
-              <option value="6x ao dia">6x ao dia</option>
-              <option value="8x ao dia">8x ao dia</option>
-              <option value="12x ao dia">12x ao dia</option>
+
               <option value="A cada 2 horas">A cada 2 horas</option>
               <option value="A cada 4 horas">A cada 4 horas</option>
               <option value="A cada 6 horas">A cada 6 horas</option>

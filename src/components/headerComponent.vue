@@ -6,7 +6,6 @@
           v-if="menus && menus.length > 0"
           id="menu"
           class="jm jm-menu nav-maior none"
-          style="margin-left: 80px"
         >
           <div class="separador">
             <RouterLink
@@ -27,12 +26,9 @@
         >
           <img
             v-if="logo"
-            :src="`${baseStorage.replace(/\/$/, '')}/${logo.replace(
-              /^\/+/,
-              ''
-            )}`"
+            :src="`${baseStorage.replace(/\/$/, '')}/${logo.replace(/^\/+/, '')}`"
             alt="Logo da empresa"
-            style="height: 36px; max-width: 140px; object-fit: contain"
+            class="tam-100"
           >
         </RouterLink>
 
@@ -47,6 +43,23 @@
       </div>
 
       <div class="coluna">
+        <div class="linha m-d">
+         <RouterLink :to="{ name: 'Home', params: { empresa: $route.params.empresa } }" class="fonte-fraca">
+            {{ $route.params.empresa }}
+          </RouterLink> 
+          <h3 class="icone-avancar icone-menor fonte-fraca"></h3>
+          <RouterLink 
+            v-if="modulo && modulo.URL" 
+            :to="`/${$route.params.empresa}${modulo.URL}`"
+            class="fonte-fraca"
+          >
+            {{ moduloAtivo }}
+          </RouterLink> 
+          <h3 v-else class="fonte-fraca">{{ moduloAtivo }}</h3> 
+          <h3 v-if="$route.name !== 'Home'" class="icone-avancar icone-menor fonte-fraca"></h3>
+          <h3 v-if="$route.name !== 'Home'" class="fonte-fraca">{{ $route.name }}</h3>
+        </div>
+
         <a
           href="#"
           class="avatar direita"
@@ -389,4 +402,8 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+/* Add your styles here */
+</style>
 
