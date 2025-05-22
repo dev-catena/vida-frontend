@@ -41,7 +41,8 @@
               <label>CPF</label>
               <input 
                 type="text" 
-                v-model="cpfFormatado" 
+                v-model="localHospede.cpf" 
+                v-mask="'###.###.###-##'"
                 maxlength="14"
                 placeholder="000.000.000-00"
               />
