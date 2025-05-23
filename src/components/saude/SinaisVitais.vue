@@ -1,10 +1,5 @@
 <template>
   <div class="sinais-vitais">
-    <Breadcrumbs :items="[
-      { text: 'Início', to: '/' },
-      { text: 'Saúde', to: '/saude' },
-      { text: 'Sinais Vitais' }
-    ]" />
     <div class="header">
       <h2>Sinais Vitais</h2>
       <button class="btn-novo" @click="abrirNovoRegistro">
@@ -138,7 +133,6 @@
 import { ref, watch, onMounted } from 'vue';
 import api from '@/services/api';
 import { useAuthStore } from '@/stores/auth';
-import Breadcrumbs from '@/components/common/Breadcrumbs.vue';
 
 const props = defineProps({
   pessoaId: {

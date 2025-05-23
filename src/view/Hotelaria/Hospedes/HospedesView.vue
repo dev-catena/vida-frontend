@@ -1177,17 +1177,54 @@ watch(
 }
 
 .bloco {
-  background: white;
-  border-radius: var(--raio);
-  padding: 12px 20px;
-  cursor: pointer;
-  transition: all 0.2s;
+  width: 200px;
+  min-width: 200px;
+  max-width: 200px;
+  height: 56px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  white-space: nowrap;
+  justify-content: center;
+  gap: 12px;
+  background: white;
+  border-radius: var(--raio);
+  padding: 0 20px;
+  cursor: pointer;
+  transition: all 0.2s;
   border: 1px solid var(--cor-separador);
-  min-width: fit-content;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+  box-sizing: border-box;
+  margin-top: 15px;
+}
+
+.bloco .alinha-v {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.bloco [class^="icone-"] {
+  width: 22px;
+  height: 22px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: filter 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.bloco h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .bloco:hover {
@@ -1203,21 +1240,6 @@ watch(
 
 .bloco.ativo [class^="icone-"] {
   filter: brightness(0) invert(1);
-}
-
-.bloco h3 {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.bloco [class^="icone-"] {
-  width: 24px;
-  height: 24px;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  transition: filter 0.2s;
 }
 
 .content-wrapper {
@@ -1371,31 +1393,43 @@ th {
   background: var(--cor-secundaria-escura);
 }
 
-.icone-info {
+.icone-info:before {
   background-image: url("@/assets/icons/info.svg");
 }
 
-.icone-responsaveis {
+.icone-responsaveis:before {
   background-image: url("@/assets/icons/responsaveis.svg");
 }
 
-.icone-app {
-  background-image: url("@/assets/icons/app.svg");
+.icone-app:before {
+  background-image: url("@/assets/icons/apps-add.svg");
 }
 
-.icone-deletar {
+.icone-deletar:before {
   background-image: url("@/assets/icons/deletar.svg");
 }
 
-.icone-prontuario {
+.icone-prontuario:before {
   background-image: url("@/assets/icons/prontuario.svg");
 }
 
-.acoes {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-  margin-top: var(--margem);
+.icone-editar:before {
+  background-image: url("@/assets/icons/editar.svg");
+}
+
+.icone-excluir:before {
+  background-image: url("@/assets/icons/excluir.svg");
+}
+
+.btn-info:hover img,
+.btn-gestao:hover img,
+.btn-app:hover img,
+.btn-deletar:hover img {
+  filter: none;
+}
+
+.acoes button img {
+  display: none;
 }
 
 .acoes button {
@@ -1409,33 +1443,6 @@ th {
 
 .acoes button:hover {
   background-color: var(--cor-hover);
-}
-
-.acoes button img {
-  width: 20px;
-  height: 20px;
-  filter: brightness(0) saturate(100%) invert(40%) sepia(0%) saturate(0%)
-    hue-rotate(0deg) brightness(90%) contrast(90%);
-}
-
-.btn-info:hover img {
-  filter: brightness(0) saturate(100%) invert(40%) sepia(100%) saturate(1000%)
-    hue-rotate(190deg) brightness(90%) contrast(90%);
-}
-
-.btn-gestao:hover img {
-  filter: brightness(0) saturate(100%) invert(40%) sepia(100%) saturate(1000%)
-    hue-rotate(190deg) brightness(90%) contrast(90%);
-}
-
-.btn-app:hover img {
-  filter: brightness(0) saturate(100%) invert(40%) sepia(100%) saturate(1000%)
-    hue-rotate(190deg) brightness(90%) contrast(90%);
-}
-
-.btn-deletar:hover img {
-  filter: brightness(0) saturate(100%) invert(20%) sepia(100%) saturate(1000%)
-    hue-rotate(0deg) brightness(90%) contrast(90%);
 }
 
 .modal {

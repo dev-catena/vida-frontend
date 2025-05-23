@@ -1,23 +1,11 @@
 <template>
   <main class="prontuario">
-    <div class="cards-container" :class="{ 'disabled': !selectedPessoa }">
-      <div 
-        v-for="card in cards" 
-        :key="card.route"
-        class="bloco clicavel" 
-        :class="{ 'ativo': activeCard === card.route }"
-        @click="selectCard(card.route)"
-      >
-        <div class="alinha-v alinha-centro">
-          <div :class="card.icon"></div>
-          <h3>{{ card.title }}</h3>
-        </div>
-      </div>
-    </div>
-
     <div class="content-wrapper">
       <div class="header">
-        <h1>Prontuário - {{ selectedPessoa?.nome || 'Nenhuma pessoa selecionada' }}</h1>
+        <h1>
+          Prontuário -
+          {{ selectedPessoa?.nome || "Nenhuma pessoa selecionada" }}
+        </h1>
 
         <div class="search-container">
           <div class="search-box">
@@ -42,8 +30,23 @@
         </div>
       </div>
 
-      <div class="content-area">
-        <component 
+      <div class="cards-container">
+        <div
+          v-for="card in cards"
+          :key="card.route"
+          class="bloco clicavel"
+          :class="{ ativo: activeCard === card.route }"
+          @click="selectCard(card.route)"
+        >
+          <div class="alinha-v alinha-centro">
+            <div :class="card.icon"></div>
+            <h3>{{ card.title }}</h3>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <component
           v-if="selectedPessoa && activeCard && activeComponent"
           :is="activeComponent"
           :pessoa-id="selectedPessoa.id"
@@ -61,21 +64,24 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
-import api from '@/services/api';
-import SinaisVitais from '@/components/saude/SinaisVitais.vue';
-import Ocorrencias from '@/components/saude/Ocorrencias.vue';
-import PrescricoesCuidados from '@/components/saude/PrescricoesCuidados.vue';
-import Prescricoes from '@/components/saude/Prescricoes.vue';
-import Lesao from '@/components/saude/Lesao.vue';
-import Evolucao from '@/components/saude/Evolucao.vue';
-import Admissao from '@/components/saude/Admissao.vue';
-import { usePessoasStore } from '@/stores/pessoas';
+import { ref, computed, onMounted, watch } from "vue";
+import api from "@/services/api";
+import SinaisVitais from "@/components/saude/SinaisVitais.vue";
+import Ocorrencias from "@/components/saude/Ocorrencias.vue";
+import PrescricoesCuidados from "@/components/saude/PrescricoesCuidados.vue";
+import Prescricoes from "@/components/saude/Prescricoes.vue";
+import Lesao from "@/components/saude/Lesao.vue";
+import Evolucao from "@/components/saude/Evolucao.vue";
+import Admissao from "@/components/saude/Admissao.vue";
+import { usePessoasStore } from "@/stores/pessoas";
 
-console.log('ProntuarioView - Componente SinaisVitais importado:', SinaisVitais);
+console.log(
+  "ProntuarioView - Componente SinaisVitais importado:",
+  SinaisVitais
+);
 
 const pessoasStore = usePessoasStore();
-const searchQuery = ref('');
+const searchQuery = ref("");
 const showResults = ref(false);
 const pessoas = ref([]);
 const filteredPessoas = ref([]);
@@ -85,65 +91,68 @@ const searchTimeout = ref(null);
 
 const cards = [
   {
-    title: 'Sinais Vitais',
-    route: 'sinais-vitais',
+    title: "Sinais Vitais",
+    route: "sinais-vitais",
     component: SinaisVitais,
-    icon: 'icone-sinais-vitais'
+    icon: "icone-sinais-vitais",
   },
   {
-    title: 'Ocorrências',
-    route: 'ocorrencias',
+    title: "Ocorrências",
+    route: "ocorrencias",
     component: Ocorrencias,
-    icon: 'icone-ocorrencias'
+    icon: "icone-ocorrencias",
   },
   {
-    title: 'Prescrições de Cuidados',
-    route: 'prescricoes-cuidados',
+    title: "Prescrições de Cuidados",
+    route: "prescricoes-cuidados",
     component: PrescricoesCuidados,
-    icon: 'icone-cuidados'
+    icon: "icone-cuidados",
   },
   {
-    title: 'Prescrições',
-    route: 'prescricoes',
+    title: "Prescrições",
+    route: "prescricoes",
     component: Prescricoes,
-    icon: 'icone-prescricoes'
+    icon: "icone-prescricoes",
   },
   {
-    title: 'Lesão',
-    route: 'lesao',
+    title: "Lesão",
+    route: "lesao",
     component: Lesao,
-    icon: 'icone-lesao'
+    icon: "icone-lesao",
   },
   {
-    title: 'Evolução',
-    route: 'evolucao',
+    title: "Evolução",
+    route: "evolucao",
     component: Evolucao,
-    icon: 'icone-evolucao'
+    icon: "icone-evolucao",
   },
   {
-    title: 'Admissão',
-    route: 'admissao',
+    title: "Admissão",
+    route: "admissao",
     component: Admissao,
-    icon: 'icone-admissao'
-  }
+    icon: "icone-admissao",
+  },
 ];
 
-console.log('ProntuarioView - Cards definidos:', cards);
+console.log("ProntuarioView - Cards definidos:", cards);
 
 const activeComponent = computed(() => {
-  console.log('ProntuarioView - Buscando card para rota:', activeCard.value);
-  const card = cards.find(c => c.route === activeCard.value);
-  console.log('ProntuarioView - Card encontrado:', card);
+  console.log("ProntuarioView - Buscando card para rota:", activeCard.value);
+  const card = cards.find((c) => c.route === activeCard.value);
+  console.log("ProntuarioView - Card encontrado:", card);
   if (!card) {
-    console.warn('ProntuarioView - Nenhum card encontrado para a rota:', activeCard.value);
+    console.warn(
+      "ProntuarioView - Nenhum card encontrado para a rota:",
+      activeCard.value
+    );
     return null;
   }
-  console.log('ProntuarioView - Componente do card:', card.component);
+  console.log("ProntuarioView - Componente do card:", card.component);
   return card.component;
 });
 
 const formatCPF = (cpf) => {
-  if (!cpf) return '';
+  if (!cpf) return "";
   return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
 };
 
@@ -160,9 +169,10 @@ const handleSearch = () => {
 
   searchTimeout.value = setTimeout(() => {
     const searchTerm = searchQuery.value.toLowerCase();
-    filteredPessoas.value = pessoas.value.filter(pessoa => 
-      pessoa.nome.toLowerCase().includes(searchTerm) ||
-      (pessoa.cpf && pessoa.cpf.includes(searchTerm))
+    filteredPessoas.value = pessoas.value.filter(
+      (pessoa) =>
+        pessoa.nome.toLowerCase().includes(searchTerm) ||
+        (pessoa.cpf && pessoa.cpf.includes(searchTerm))
     );
     showResults.value = true;
   }, 300);
@@ -170,26 +180,26 @@ const handleSearch = () => {
 
 const carregarPessoas = async () => {
   try {
-    const response = await api.get('/pessoa/listar');
+    const response = await api.get("/pessoa/listar");
     pessoas.value = response.data;
   } catch (error) {
-    console.error('Erro ao carregar pessoas:', error);
+    console.error("Erro ao carregar pessoas:", error);
   }
 };
 
 const selectPessoa = (pessoa) => {
-  console.log('ProntuarioView - Pessoa selecionada:', pessoa);
+  console.log("ProntuarioView - Pessoa selecionada:", pessoa);
   selectedPessoa.value = pessoa;
   pessoasStore.selecionarPessoa(pessoa);
   searchQuery.value = `${pessoa.nome} - ${formatCPF(pessoa.cpf)}`;
   showResults.value = false;
-  activeCard.value = 'sinais-vitais';
-  console.log('ProntuarioView - Card ativo definido como:', activeCard.value);
+  activeCard.value = "sinais-vitais";
+  console.log("ProntuarioView - Card ativo definido como:", activeCard.value);
 };
 
 const selectCard = (route) => {
   if (!selectedPessoa.value) return;
-  console.log('ProntuarioView - Selecionando card:', route);
+  console.log("ProntuarioView - Selecionando card:", route);
   activeCard.value = route;
 };
 
@@ -197,16 +207,18 @@ onMounted(() => {
   carregarPessoas();
 });
 
-watch(() => pessoasStore.pessoaId, (newId) => {
-  if (newId) {
-    const pessoa = pessoas.value.find(p => p.id === newId);
-    if (pessoa) {
-      selectPessoa(pessoa);
+watch(
+  () => pessoasStore.pessoaId,
+  (newId) => {
+    if (newId) {
+      const pessoa = pessoas.value.find((p) => p.id === newId);
+      if (pessoa) {
+        selectPessoa(pessoa);
+      }
     }
   }
-});
+);
 </script>
-
 
 <style scoped>
 .prontuario {
@@ -214,35 +226,6 @@ watch(() => pessoasStore.pessoaId, (newId) => {
   flex-direction: column;
   height: 100vh;
   background: var(--cor-bg);
-}
-
-.cards-container {
-  display: flex;
-  gap: var(--margem);
-  padding: var(--margem);
-  overflow-x: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--cor-separador) transparent;
-  background: var(--cor-bg);
-  border-bottom: 1px solid var(--cor-separador);
-}
-
-.cards-container::-webkit-scrollbar {
-  height: 6px;
-}
-
-.cards-container::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.cards-container::-webkit-scrollbar-thumb {
-  background-color: var(--cor-separador);
-  border-radius: 3px;
-}
-
-.cards-container.disabled {
-  opacity: 0.6;
-  pointer-events: none;
 }
 
 .content-wrapper {
@@ -288,11 +271,85 @@ h1 {
   box-shadow: 0 0 0 2px var(--cor-primaria-fraca);
 }
 
-.content-area {
-  flex: 1;
-  background: var(--cor-bg);
+.cards-container {
+  display: flex;
+  gap: var(--margem);
   padding: var(--margem);
-  overflow-y: auto;
+  overflow-x: auto;
+  align-items: stretch;
+  background: var(--cor-bg);
+  border-bottom: 1px solid var(--cor-separador);
+}
+
+.cards-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.cards-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.cards-container::-webkit-scrollbar-thumb {
+  background-color: var(--cor-separador);
+  border-radius: 3px;
+}
+
+.bloco {
+  width: 200px;
+  min-width: 200px;
+  max-width: 200px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: white;
+  border-radius: var(--raio);
+  padding: 0 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid var(--cor-separador);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+  box-sizing: border-box;
+  margin-top: 15px;
+}
+
+.bloco:hover {
+  background: var(--cor-hover);
+  border-color: var(--cor-primaria);
+}
+
+.bloco.ativo {
+  background: var(--cor-primaria);
+  color: white;
+  border-color: var(--cor-primaria);
+}
+
+.bloco.ativo [class^="icone-"] {
+  filter: brightness(0) invert(1);
+}
+
+.bloco h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+
+.bloco [class^="icone-"] {
+  width: 22px;
+  height: 22px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: filter 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  vertical-align: middle;
 }
 
 .no-content {
@@ -304,34 +361,6 @@ h1 {
   font-size: 16px;
   text-align: center;
   padding: var(--margem);
-}
-
-.icone-sinais-vitais {
-  background-image: url('@/assets/icons/sinais-vitais.svg');
-}
-
-.icone-ocorrencias {
-  background-image: url('@/assets/icons/ocorrencias.svg');
-}
-
-.icone-cuidados {
-  background-image: url('@/assets/icons/cuidados.svg');
-}
-
-.icone-prescricoes {
-  background-image: url('@/assets/icons/prescricoes.svg');
-}
-
-.icone-lesao {
-  background-image: url('@/assets/icons/lesao.svg');
-}
-
-.icone-evolucao {
-  background-image: url('@/assets/icons/evolucao.svg');
-}
-
-.icone-admissao {
-  background-image: url('@/assets/icons/admissao.svg');
 }
 
 [class^="icone-"],
@@ -354,50 +383,56 @@ h1 {
   float: left;
 }
 
-[class^="icone-"]:not(:empty),
-[class*=" icone-"]:not(:empty) {
-  padding-right: var(--margem);
+.icone-sinais-vitais:before {
+  background-image: url("@/assets/icons/sinais-vitais.svg");
 }
 
-.tabela [class^="icone-"],
-[class^="icone-"].icone-menor,
-.tabela [class*=" icone-"],
-[class*=" icone-"].icone-menor {
-  line-height: 24px;
-  min-width: 36px;
-  margin: -2px 0;
+.icone-ocorrencias:before {
+  background-image: url("@/assets/icons/ocorrencias.svg");
 }
 
-.tabela [class^="icone-"]:before,
-[class^="icone-"].icone-menor:before,
-.tabela [class*="icone-"]:before,
-[class*=" icone-"].icone-menor:before {
-  width: 36px;
-  height: 24px;
+.icone-cuidados:before {
+  background-image: url("@/assets/icons/cuidados.svg");
+}
+
+.icone-prescricoes:before {
+  background-image: url("@/assets/icons/prescricoes.svg");
+}
+
+.icone-lesao:before {
+  background-image: url("@/assets/icons/lesao.svg");
+}
+
+.icone-evolucao:before {
+  background-image: url("@/assets/icons/evolucao.svg");
+}
+
+.icone-admissao:before {
+  background-image: url("@/assets/icons/admissao.svg");
 }
 
 .icone-novo:before {
-  background-image: url('@/assets/icons/add.svg');
+  background-image: url("@/assets/icons/add.svg");
 }
 
 .icone-editar:before {
-  background-image: url('@/assets/icons/editar.svg');
+  background-image: url("@/assets/icons/editar.svg");
 }
 
 .icone-salvar:before {
-  background-image: url('@/assets/icons/apps-add.svg');
+  background-image: url("@/assets/icons/apps-add.svg");
 }
 
 .icone-cancelar:before {
-  background-image: url('@/assets/icons/angle-small-right.svg');
+  background-image: url("@/assets/icons/angle-small-right.svg");
 }
 
 .icone-deletar:before {
-  background-image: url('@/assets/icons/deletar.svg');
+  background-image: url("@/assets/icons/deletar.svg");
 }
 
 .icone-fechar:before {
-  background-image: url('@/assets/icons/menu.svg');
+  background-image: url("@/assets/icons/menu.svg");
 }
 
 .btn-novo,
@@ -457,4 +492,4 @@ h1 {
   border-radius: var(--raio);
   box-shadow: var(--sombra-card);
 }
-</style> 
+</style>

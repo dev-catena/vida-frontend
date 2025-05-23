@@ -19,25 +19,45 @@
               <th>Fase</th>
               <th>Dor</th>
               <th>Contaminação</th>
+              <th>Status</th>
               <th>Ações</th>
             </tr>
           </thead>
           <tbody>
+            <!-- Lesões Temporárias -->
+            <template v-if="isTemp && lesoesTemp.length > 0">
+              <tr v-for="lesao in lesoesTemp" :key="'temp-' + lesao.data_hora" class="temp-row">
+                <td>{{ formatDateTime(lesao.data_hora) }}</td>
+                <td>{{ getLocalizacaoFormatada(lesao.local) }}</td>
+                <td>{{ lesao.tipo }}</td>
+                <td>{{ lesao.estagio }}</td>
+                <td>{{ lesao.fase }}</td>
+                <td>{{ lesao.dor || 'Não Consta' }}</td>
+                <td>{{ lesao.contaminacao }}</td>
+                <td><span class="status-temp">Temporária</span></td>
+                <td>
+                  <button class="btn-visualizar" @click="visualizarLesao(lesao)">Visualizar</button>
+                </td>
+              </tr>
+            </template>
+
+            <!-- Lesões Cadastradas -->
             <tr v-for="lesao in lesoes" :key="lesao.id">
-              <td>{{ lesao.data_hora }}</td>
-              <td>{{ lesao.localizacao }}</td>
+              <td>{{ formatDateTime(lesao.data_hora) }}</td>
+              <td>{{ getLocalizacaoFormatada(lesao.localizacao) }}</td>
               <td>{{ lesao.tipo }}</td>
               <td>{{ lesao.dimensoes }}</td>
               <td>{{ lesao.estagio }}</td>
               <td>{{ lesao.fase }}</td>
               <td>{{ lesao.dor || 'Não Consta' }}</td>
               <td>{{ lesao.contaminacao }}</td>
+              <td><span class="status-cadastrada">Cadastrada</span></td>
               <td>
                 <button class="btn-editar" @click="editarLesao(lesao)">Editar</button>
               </td>
             </tr>
-            <tr v-if="lesoes.length === 0">
-              <td colspan="7" class="no-records">
+            <tr v-if="lesoes.length === 0 && (!isTemp || lesoesTemp.length === 0)">
+              <td colspan="9" class="no-records">
                 Nenhum registro encontrado
               </td>
             </tr>
@@ -334,8 +354,18 @@ const props = defineProps({
   pessoaId: {
     type: [String, Number],
     required: true
+  },
+  isTemp: {
+    type: Boolean,
+    default: false
+  },
+  lesoesTemp: {
+    type: Array,
+    default: () => []
   }
 });
+
+const emit = defineEmits(['lesao-cadastrada']);
 
 const authStore = useAuthStore();
 const lesoes = ref([]);
@@ -371,6 +401,24 @@ const formatDateTime = (date) => {
   const hora = String(data.getHours()).padStart(2, '0');
   const minutos = String(data.getMinutes()).padStart(2, '0');
   return `${data.toLocaleDateString('pt-BR')} ${hora}:${minutos}`;
+};
+
+const getLocalizacaoFormatada = (localizacao) => {
+  try {
+    if (!localizacao) return 'Não especificado';
+    
+    // Se for uma string JSON, tenta fazer o parse
+    const marcas = typeof localizacao === 'string' ? JSON.parse(localizacao) : localizacao;
+    
+    if (Array.isArray(marcas)) {
+      return `${marcas.length} marcação${marcas.length !== 1 ? 'ões' : ''} no corpo`;
+    }
+    
+    return 'Não especificado';
+  } catch (error) {
+    console.error('Erro ao formatar localização:', error);
+    return 'Não especificado';
+  }
 };
 
 const carregarRegistros = async () => {
@@ -524,7 +572,7 @@ const salvarRegistro = async () => {
   try {
     console.log('Iniciando salvamento de lesão');
     
-    if (!props.pessoaId) {
+    if (!props.pessoaId && !props.isTemp) {
       console.error('pessoaId não está definido');
       return;
     }
@@ -576,19 +624,26 @@ const salvarRegistro = async () => {
 
       console.log('Dados a serem enviados:', dados);
 
-      const response = await api.post('/lesao/cadastrar', dados, {
-        headers: {
-          Authorization: `Bearer ${authStore.token}`
-        }
-      });
-
-      console.log('Resposta do cadastro:', response.data);
-
-      if (response.data) {
-        await carregarRegistros();
+      if (props.isTemp) {
+        // Se for modo temporário, apenas emite o evento com os dados
+        emit('lesao-cadastrada', dados);
         fecharModal();
       } else {
-        console.error('Resposta do cadastro não contém dados');
+        // Se não for modo temporário, salva no backend
+        const response = await api.post('/lesao/cadastrar', dados, {
+          headers: {
+            Authorization: `Bearer ${authStore.token}`
+          }
+        });
+
+        console.log('Resposta do cadastro:', response.data);
+
+        if (response.data) {
+          await carregarRegistros();
+          fecharModal();
+        } else {
+          console.error('Resposta do cadastro não contém dados');
+        }
       }
     };
 
@@ -940,5 +995,25 @@ th {
     width: 100%;
     margin-bottom: var(--margem);
   }
+}
+
+.temp-row {
+  background-color: var(--cor-primaria-fraca);
+}
+
+.status-temp {
+  background-color: var(--cor-aviso);
+  color: white;
+  padding: 4px 8px;
+  border-radius: var(--raio);
+  font-size: 12px;
+}
+
+.status-cadastrada {
+  background-color: var(--cor-sucesso);
+  color: white;
+  padding: 4px 8px;
+  border-radius: var(--raio);
+  font-size: 12px;
 }
 </style> 

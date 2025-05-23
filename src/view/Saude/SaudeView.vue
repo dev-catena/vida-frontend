@@ -3,7 +3,7 @@
     <h1>Saúde</h1>
     <div class="content">
       <div class="grid-cards">
-        <div class="card" @click="navegarPara('prontuario')">
+        <div class="card" @click="navegarPara()">
           <div class="icone-prontuario"></div>
           <h3>Prontuário Eletrônico</h3>
           <p>Acesse o prontuário eletrônico dos hóspedes com todas as funcionalidades de saúde</p>
@@ -14,16 +14,25 @@
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
 
 const route = useRoute();
+const router = useRouter();
 const empresa = ref('');
+
+const navegarPara = () => {
+  router.push({
+    name: 'SaudeProntuario',
+    params: {
+      empresa: empresa.value
+    }
+  });
+};
 
 onMounted(() => {
   empresa.value = route.params.empresa;
 });
-
 </script>
 
 <style scoped>
